@@ -1,5 +1,3 @@
-{
-    "editor.quickSuggestions": {
-        "other": "off"
-    }
+"env": {
+    "RUST_BACKTRACE": "0"
 }
