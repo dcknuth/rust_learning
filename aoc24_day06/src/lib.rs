@@ -142,7 +142,7 @@ mod tests {
     static TEST_INPUT: Lazy<String> = Lazy::new(|| {
         fs::read_to_string("aoc24_day06/test.txt")
             .expect("Could not read test file")
-        });
+    });
 
     #[test]
     fn test_part1() {
