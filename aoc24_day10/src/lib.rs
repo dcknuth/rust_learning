@@ -99,6 +99,38 @@ pub fn part1(s: &str) -> usize {
     score
 }
 
+/// Assuming all paths that are nine long lead to a peak
+fn find_rating(graph: &DiGraph<i32, i32>, start: NodeIndex) -> usize {
+    let mut cur_list: Vec<NodeIndex> = vec![];
+
+    cur_list.push(start);
+    for step in 0..9 {
+        if cur_list.len() == 0 {
+            break
+        }
+        let mut new_list: Vec<NodeIndex> = vec![];
+        for node in cur_list {
+            for neighbor in graph.neighbors(node) {
+                new_list.push(neighbor);
+            }
+        }
+        cur_list = new_list;
+    }
+
+    cur_list.len()
+}
+
+pub fn part2(s: &str) -> usize {
+    let m = create_matrix(s);
+    let (g, trailheads, peaks) = make_graph(&m);
+    let mut rating = 0;
+    for trailhead in trailheads {
+        rating += find_rating(&g, trailhead);
+    }
+    
+    rating
+}
+
 #[cfg(test)]
 mod test {
     use std::fs;
@@ -123,5 +155,10 @@ mod test {
     #[test]
     fn test_part1() {
         assert_eq!(part1(&S), 36);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2(&S), 81);
     }
 }
