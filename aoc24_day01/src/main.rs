@@ -24,8 +24,6 @@ fn main() {
         list1.push(nums[0]);
         list2.push(nums[1]);
     }
-    // println!("List 1: {:?}", list1);
-    // println!("List 2: {:?}", list2);
     
     //Part 1
     // Let's sort both lists

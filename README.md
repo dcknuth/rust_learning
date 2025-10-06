@@ -1,5 +1,5 @@
-# rust_learning
-Learning some Rust using the AOC 2024 puzzles
+# Learning Rust
+Learning some Rust using the AOC 2024 puzzles up to day 10 (easier ones)
 
 * Day 1 and 2: Just learning how to get a file in and do anything with Rust
 * Day 3: Added in testing in the Rust way. Added a lib file with tests on a part1 and part2 function with the example input. Then piped my individual input to the tested part1 and part2 functions from the main file. Since the VS Code debugger seems... imperfect, I am ending up with a lot of debug prints. Will have to think of a way to deal with that or to better use the debugger
@@ -14,4 +14,16 @@ I did go and look at some code for AOC from others doing it in Rust. There are a
 * Day 8: I still had to fix a bunch of items to get things to compile, but it seemed to go much smoother with less stumbling with typing. I'm sure it could be improved, but it finished quick and there was no cloning. I rebuilt some data types that I could have carried from part1 to part2, but that seems minor
 * Day 9: Brute force part 1 was fine and didn't take too long. Part 2 was still brute force with a little early exit. It took a bit to get the stepping and loop exits correct, but worked and didn't take too long in run time. Might rewrite with a different structure when I come back through to refactor. I think my Part 2 code was a little hard to follow
 * Day 10: Part 1, I was looking for a chance to use petgraph and compare with the use of NetworkX with Python. NetworkX and Python is much easier to use. I will see if petgraph is a bunch faster when I go back and refactor the days and compare to whatever I did in Python.  
-Part 2: I had a good idea. Seemed to work and was able to just use petgraph's neighbors in a fixed length loop. May not have really needed a graph library for this day
+Part 2: I had a good idea. Seemed to work and was able to just use petgraph's neighbors in a fixed length loop. May not have really needed a graph library for this day, but it was good to learn a bit about petgraph
+
+## Reflecting, Refactoring, and Timing
+Now that I have a tiny bit of Rust experience and am almost done going through [The Rust Programming Language](https://doc.rust-lang.org/book/) book, I am going to read what I did in Python for the same AOC days, compare, time them and refactor a bit.
+
+* Day 1: My Rust code is not quite twice as long (60 lines) as my Python code (36 lines). I did the same approach in each for part 1 which was to turn each column into a list, sort them and walk through. I did a singly nested for loop in Python for part 2, but in Rust I made a HashMap (would have been a Dict in Python) so that I would only have to walk the list once and saved the counts. So this is not a perfect comparison of approach between the two and I wanted to do the Rust implementation from scratch for these, so that is expected. In some cases, I may refactor to get a better match with the Python for the timing comparison. I will start with just a simple timing of the parsing and the algorithm without the part that reads in the input. So a string will have already been created from an input file, but not parsed yet.  
+```
+        Python      Rust(debug) (release)   in milliseconds
+Part1   0.786       1.794       0.0122
+Part2   50.96       0.685       0.0037
+```
+So I ran each twice and took the second run timing to allow caching to help, but no fancy averaging or anything. Interesting that Python seems to be able to compete with the Rust debug timing in part 1 where the approach is the same. However, if you let Rust optimize, it's not even close as Rust is 64 times faster. The Rust approach for part 2 should be faster as long as using a bit more memory is not to expensive, and so it seems with Rust faster in either case and over 13,000x faster with the better approach and release optimized
+* Day 2: ...
