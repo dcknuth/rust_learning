@@ -26,4 +26,17 @@ Part1   0.786       1.794       0.0122
 Part2   50.96       0.685       0.0037
 ```
 So I ran each twice and took the second run timing to allow caching to help, but no fancy averaging or anything. Interesting that Python seems to be able to compete with the Rust debug timing in part 1 where the approach is the same. However, if you let Rust optimize, it's not even close as Rust is 64 times faster. The Rust approach for part 2 should be faster as long as using a bit more memory is not to expensive, and so it seems with Rust faster in either case and over 13,000x faster with the better approach and release optimized
-* Day 2: ...
+* Day 2: My Rust is just over twice as long, but I made a function to test "safety" in Python, which reduced the code size. Part 1 was done in a pretty comparable way between the two with a single walk through each line of numbers. Part 2 was again done a bit different between the two. In Python, I removed each number and tested with a short-circuit if a good result was seen. In Rust, I have a function that will allow another attempt without the current number or the next number and a section to handle the initial number having to be removed. It should be faster, but is harder to read by a good bit and longer to write.
+```
+        Python      Rust(debug) (release)   in milliseconds
+Part1   1.7         2.1         0.17
+Part2   5.7         2.8         0.27
+```
+So things look about as expected and in-line with day01. I am only going to call out the release difference from here forward, which is 10x and 21x faster for Rust part1 and 2. Could I get rid of the .clone() that is used to feed the second function call? I think so. I could try just using a flag to skip an index in the list and pass in the index. I could also use the function in both parts and make the total amount of code shorter. I just did the modification for part 2.
+```
+        debug   release
+Part1   2.3     0.21
+Part2   2.5     0.24
+```
+A bit strange as the first part increased slightly and the second decreased slightly. I guess there are not too many copies and maybe the compiler is rearranging to not do them if not needed. It does not seem easier to read and was harder to implement than I first thought. Maybe not much to be gained for this one
+* Day 3: ...
