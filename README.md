@@ -39,4 +39,11 @@ Part1   2.3     0.21
 Part2   2.5     0.24
 ```
 A bit strange as the first part increased slightly and the second decreased slightly. I guess there are not too many copies and maybe the compiler is rearranging to not do them if not needed. It does not seem easier to read and was harder to implement than I first thought. Maybe not much to be gained for this one
-* Day 3: ...
+* Day 3: First thing is to clean up all the prints for debugging and to look into fixing all the warnings for unused variables. I didn't clean up ALL the unused warnings in Rust and this will not be an Apples-to-Apples comparison as I used a regex in Python and manual parsing in Rust.
+```
+        Python      Rust(debug) (release)   in milliseconds
+Part1   0.63        0.49        0.054
+Part2   1.3         2.2         0.40
+```
+If you don't count regex as hard, Python is again much easier to write and only takes about 15% the amount of code that Rust does. I introduced Rust style testing in this day so Rust is doing a lot more here. Rust is once again, faster at 11x and 3x faster for part1 and 2 respectively. Why doesn't Rust beat Python by 10x in part 2? I think the regex allows Python do all the searching at once in a compiled call to the regex, so its loop work is not increasing much. Rust has a regex crate, so I could try that or some other speedup, but since it is already running under half a millisecond, I will leave it be for now. I may come back later and try the regex crate just to see how to use it with Rust.
+* Day 4: ...

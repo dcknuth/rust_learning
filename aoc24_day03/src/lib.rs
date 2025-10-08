@@ -3,9 +3,9 @@ pub fn part1(s: &str) -> i64 {
 
     // Find all the starts of a valid multiply
     let matches: Vec<_> = s.match_indices("mul(").map(|(idx, _)| idx).collect();
-    println!("Matches: {matches:?}");
+    //println!("Matches: {matches:?}");
     for i in matches {
-        println!("Match found at {i} of {}", &s[i..]);
+        //println!("Match found at {i} of {}", &s[i..]);
 
         // Find the first number
         let mut mul_arg1 = 0;
@@ -17,15 +17,15 @@ pub fn part1(s: &str) -> i64 {
             .take_while(|c| c.is_ascii_digit())
             .count();
         if len > 0 && len < 4 {
-            println!("This position has a valid first number of length {len}");
+            //println!("This position has a valid first number of length {len}");
             mul_arg1 = tail[..len].parse().unwrap();
-            println!("First number: {mul_arg1}");
+            //println!("First number: {mul_arg1}");
         }
 
         // Ensure there's a comma after the first number
         let i_comma = i + 4 + len;
         if i_comma >= s.len() || &s[i_comma..i_comma+1] != "," {
-            println!("No comma after first number");
+            //println!("No comma after first number");
             continue;
         }
 
@@ -39,15 +39,15 @@ pub fn part1(s: &str) -> i64 {
             .take_while(|c| c.is_ascii_digit())
             .count();
         if len > 0 && len < 4 {
-            println!("This position has a valid second number of length {len}");
+            //println!("This position has a valid second number of length {len}");
             mul_arg2 = tail[..len].parse().unwrap();
-            println!("Second number: {mul_arg2}");
+            //println!("Second number: {mul_arg2}");
         }
 
         // Ensure there's a parenthesis after the second number
         let i_paren = i_comma + 1 + len;
         if i_paren >= s.len() || &s[i_paren..i_paren+1] != ")" {
-            println!("No parenthesis after second number");
+            //println!("No parenthesis after second number");
             continue;
         }
 
@@ -59,11 +59,7 @@ pub fn part1(s: &str) -> i64 {
 
 fn find_valid_mul(s: &str) -> (usize, usize, i32, i32) {
     let mut i = 0;
-    let mut idx = 0;
-    let mut l1 = 0;
-    let mut l2 = 0;
-    let mut mul_arg1 = 0;
-    let mut mul_arg2 = 0;
+    let mut mul_arg1: i32 = 0;
     
     while i < s.len() {
         let match_idx = s[i..].find("mul(");
@@ -77,7 +73,7 @@ fn find_valid_mul(s: &str) -> (usize, usize, i32, i32) {
             return (s.len(), 0, 0, 0);
         }
         let mut tail = &s[(idx+4)..];
-        l1 = tail.chars()
+        let l1 = tail.chars()
             .take_while(|c| c.is_ascii_digit())
             .count();
         if l1 > 0 && l1 < 4 {
@@ -95,12 +91,12 @@ fn find_valid_mul(s: &str) -> (usize, usize, i32, i32) {
         }
 
         // Find the second number
-        mul_arg2 = 0;
+        let mut mul_arg2 = 0;
         if i_comma + 1 >= s.len() {
             return (s.len(), 0, 0, 0);
         }
         tail = &s[(i_comma+1)..];
-        l2 = tail.chars()
+        let l2 = tail.chars()
             .take_while(|c| c.is_ascii_digit())
             .count();
         if l2 > 0 && l2 < 4 {
