@@ -46,4 +46,13 @@ Part1   0.63        0.49        0.054
 Part2   1.3         2.2         0.40
 ```
 If you don't count regex as hard, Python is again much easier to write and only takes about 15% the amount of code that Rust does. I introduced Rust style testing in this day so Rust is doing a lot more here. Rust is once again, faster at 11x and 3x faster for part1 and 2 respectively. Why doesn't Rust beat Python by 10x in part 2? I think the regex allows Python do all the searching at once in a compiled call to the regex, so its loop work is not increasing much. Rust has a regex crate, so I could try that or some other speedup, but since it is already running under half a millisecond, I will leave it be for now. I may come back later and try the regex crate just to see how to use it with Rust.
-* Day 4: ...
+* Day 4: The approach was similar in both languages for this day and was pretty loop heavy in small memory sections.
+```
+        Python      Rust(debug) (release)   in milliseconds
+Part1   18.3        3.3         0.29
+Part2   4.2         3.4         0.17
+```
+So this time Rust is 63x and 24x faster. However, it looks like I did some extra work and storage in Python part 1. Probably because I thought I would be able to use it in part 2 or to provide debugging help. So the difference in part 2 is probably more fair than in part 1.  
+This day might be a good test of trying to run something in parallel in Rust where it probably would not be worth it in Python. The Rust results are under a half ms, so unless Rust can efficiently thread, the gain will be pretty limited. Let's see if we can use Rayon here. We should be able to check and count different rows of the matrix of characters independently. If the overhead is low enough, we should see an improvement.  
+I had to do a fair rewrite to try this and I only did it on part 1. The result is that it took longer, 0.90 ms. So, either I did it wrong (quite possible) or it take a couple micro seconds to kick off a thread (CoPilot says 2-10), which could kill any gains for this example
+* Day 5: ...
