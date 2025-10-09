@@ -146,6 +146,78 @@ pub fn part2(input: &str) -> i64 {
     total
 }
 
+use std::cmp::Ordering;
+pub fn part2v2(input: &str) -> i64 {
+    // We will just copy code from part1 to get the bad lists
+    let mut rules: HashMap<i32, HashMap<i32, bool>> = HashMap::new();
+    let mut input_i = 0;
+    let mut total: i64 = 0;
+
+    let lines = input.lines().collect::<Vec<&str>>();
+    while input_i < lines.len() {
+        if lines[input_i] == "" {
+            input_i += 1;
+            break;
+        } else {
+            let rule_parts: Vec<i32> = lines[input_i].split("|").
+                map(|s| s.trim().parse().expect("Invalid Int")).
+                collect();
+            if let Some(later_pages) = rules.get_mut(&rule_parts[0]) {
+                later_pages.insert(rule_parts[1], true);
+            } else {
+                let mut later_pages: HashMap<i32, bool> = HashMap::new();
+                later_pages.insert(rule_parts[1], true);
+                rules.insert(rule_parts[0], later_pages);
+            }
+            input_i += 1;
+        }
+    }
+    let mut bad_lists: Vec<Vec<i32>> = Vec::new();
+    while input_i < lines.len() {
+        // Pages will have the page as the key and position as value
+        let mut pages: HashMap<i32, usize> = HashMap::new();
+        let pages_list: Vec<i32> = lines[input_i].split(",").
+            map(|s| s.trim().parse().expect("Invalid page num")).
+            collect();
+        for (pos, page) in pages_list.iter().enumerate() {
+            pages.insert(*page, pos);
+        }
+        input_i += 1;
+        
+        'outer: for (pos, page) in pages_list.iter().enumerate() {
+            if let Some(later_pages) = rules.get(page) {
+                for later_page in later_pages.keys() {
+                    if let Some(later_pos) = pages.get(later_page) {
+                        if *later_pos < pos {
+                            bad_lists.push(pages_list.clone());
+                            break 'outer;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // now that we have the bad lists, fix with a sort
+    for bad_list in bad_lists.iter_mut() {
+        bad_list.sort_by(|a, b| {
+            if let Some(tmp_hash) = rules.get(a) {
+                if tmp_hash.contains_key(b) {
+                    Ordering::Less
+                } else {
+                    Ordering::Equal
+                }
+            } else {
+                Ordering::Equal
+            }
+        });
+        // println!("Fixed list: {:?}", bad_list);
+        // println!("Middle page: {}", bad_list[bad_list.len() / 2]);
+        total += bad_list[bad_list.len() / 2] as i64;
+    }
+
+    total
+}
+
 #[cfg(test)]
 mod tests {
     use std::fs;

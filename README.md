@@ -55,4 +55,12 @@ Part2   4.2         3.4         0.17
 So this time Rust is 63x and 24x faster. However, it looks like I did some extra work and storage in Python part 1. Probably because I thought I would be able to use it in part 2 or to provide debugging help. So the difference in part 2 is probably more fair than in part 1.  
 This day might be a good test of trying to run something in parallel in Rust where it probably would not be worth it in Python. The Rust results are under a half ms, so unless Rust can efficiently thread, the gain will be pretty limited. Let's see if we can use Rayon here. We should be able to check and count different rows of the matrix of characters independently. If the overhead is low enough, we should see an improvement.  
 I had to do a fair rewrite to try this and I only did it on part 1. The result is that it took longer, 0.90 ms. So, either I did it wrong (quite possible) or it take a couple micro seconds to kick off a thread (CoPilot says 2-10), which could kill any gains for this example
-* Day 5: ...
+* Day 5: Results first this time
+```
+        Python      Rust(debug) (release)   in milliseconds
+Part1   144         17          1.0
+Part2   145         328         14.8
+```
+Rust is 144x and 10x faster. In Python's part 1 I used lists and in Rust I used a hash for the pairs, so not quite the same. In Python part 2, I used a sort with a custom key and in Rust I swapped values that were out of place. I expected this to be worse for Rust, but I guess that doing only bad lines and not having any line be too long makes it OK. Still, let's see if we can get the custom sort working.  
+I just made a part2v2 function this time rather than a whole new project and added a bit to main. I already had a hash of hashes to track the order in the Rust version, so I used that inside my sort closure. It worked great and the release runtime for that part is now 1.2 ms and 120x Python. Since Python was a hash of lists, we are back to not exactly comparable. I'm happy with that for now
+* Day 6: ...
