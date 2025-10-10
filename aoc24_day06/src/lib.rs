@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use rayon::prelude::*;
 
 pub fn load_matrix(s: &str) -> (Vec<Vec<char>>, Option<(i32, i32)>) {
     let mut m = Vec::new();
@@ -49,7 +50,7 @@ fn move_or_turn(m: &mut Vec<Vec<char>>, y: &mut i32, x: &mut i32, dir: &mut (i32
         }
 }
 
-pub fn part1(input: &str) -> i32 {
+pub fn part1(input: &str, visited: &mut HashMap<(i32, i32), bool>) -> i32 {
     let (mut m, pos) = load_matrix(input);
     if pos.is_none() {
         panic!("Could not find starting position")
@@ -58,12 +59,12 @@ pub fn part1(input: &str) -> i32 {
     let mut cur_dir: (i32, i32) = (-1, 0);
     
     // keep a hash of visited positions and if we visit one twice, it's fine
-    let mut visited: HashMap<(i32, i32), bool> = HashMap::new();
     while cur_y > -1 && cur_y < m.len() as i32 &&
         cur_x > -1 && cur_x < m[0].len() as i32 {
         visited.insert((cur_y, cur_x), true);
         move_or_turn(&mut m, &mut cur_y, &mut cur_x, &mut cur_dir);
     }
+
     visited.len() as i32
 }
 
@@ -108,11 +109,11 @@ fn is_loop(m: &Vec<Vec<char>>, pos: (i32, i32)) -> bool {
 }
 
 pub fn part2(input: &str) -> i32 {
-    let (mut m, pos) = load_matrix(input);
+    let (m, pos) = load_matrix(input);
     if pos.is_none() {
         panic!("Could not find starting position")
     }
-    let (mut cur_y, mut cur_x) = pos.unwrap();
+    let (cur_y, cur_x) = pos.unwrap();
     let start_y = cur_y;
     let start_x = cur_x;
     let mut total = 0;
@@ -129,6 +130,96 @@ pub fn part2(input: &str) -> i32 {
             }
         }
     }
+                
+    total
+}
+
+fn move_or_turn3(m: &Vec<Vec<char>>, y: &mut i32, x: &mut i32,
+    dir: &mut (i32, i32), block: (usize, usize)) {
+    let new_y = *y + dir.0;
+    let new_x = *x + dir.1;
+
+    if new_y > -1 && new_y < m.len() as i32 &&
+        new_x > -1 && new_x < m[0].len() as i32 {
+        if (block.0 as i32 == new_y && block.1 as i32 == new_x) ||
+            m[new_y as usize][new_x as usize] == '#' {
+            *dir = (dir.1, -dir.0);
+        } else {
+            *y = new_y;
+            *x = new_x;
+        }
+    } else {
+        *y = new_y;
+        *x = new_x;
+    }
+}
+
+fn is_loop_w_block(m: &Vec<Vec<char>>, pos: (i32, i32),
+    block: (usize, usize)) -> bool {
+    let (mut cur_y, mut cur_x) = pos;
+    let mut cur_dir: (i32, i32) = (-1, 0);
+    
+    // keep a hash that includes y, x and the direction
+    //  with a count. If a count exceeds 1 we are in a loop
+    let mut visited: HashMap<(i32, i32, (i32, i32)), i8> = HashMap::new();
+    let mut found_loop = false;
+    while cur_y > -1 && cur_y < m.len() as i32 &&
+        cur_x > -1 && cur_x < m[0].len() as i32 {
+        *visited.entry((cur_y, cur_x, (cur_dir))).or_insert(0) += 1;
+        if let Some(count) = visited.get(&(cur_y, cur_x, (cur_dir))) {
+            if *count > 1 {
+                found_loop = true;
+                break;
+            }
+        }
+        move_or_turn3(&m, &mut cur_y, &mut cur_x, &mut cur_dir, block);
+    }
+    return found_loop;
+}
+
+pub fn part2v2(input: &str) -> i32 {
+    let (m, pos) = load_matrix(input);
+    if pos.is_none() {
+        panic!("Could not find starting position")
+    }
+    let (cur_y, cur_x) = pos.unwrap();
+    let start_y = cur_y;
+    let start_x = cur_x;
+    
+    // count up while passing the current location to block
+    let total = m.par_iter().enumerate().map(|(y, row)| {
+        row.iter().enumerate().map(|(x, c)| {
+            if *c == '.' && is_loop_w_block(&m, (start_y, start_x), (y, x)) {
+                1
+            } else {
+                0
+            }
+        }).sum::<i32>()
+    }).sum::<i32>();
+                
+    total
+}
+
+pub fn part2v3(input: &str, visited: &HashMap<(i32, i32), bool>) -> i32 {
+    let (m, pos) = load_matrix(input);
+    if pos.is_none() {
+        panic!("Could not find starting position")
+    }
+    let (cur_y, cur_x) = pos.unwrap();
+    let start_y = cur_y;
+    let start_x = cur_x;
+    
+    // count up while passing the current location to block
+    let total = m.par_iter().enumerate().map(|(y, row)| {
+        row.iter().enumerate().map(|(x, c)| {
+            if *c == '.' && visited.contains_key(&(y as i32, x as i32)) &&
+                is_loop_w_block(&m, (start_y, start_x), (y, x)) {
+                1
+            } else {
+                0
+            }
+        }).sum::<i32>()
+    }).sum::<i32>();
                 
     total
 }

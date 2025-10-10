@@ -63,4 +63,15 @@ Part2   145         328         14.8
 ```
 Rust is 144x and 10x faster. In Python's part 1 I used lists and in Rust I used a hash for the pairs, so not quite the same. In Python part 2, I used a sort with a custom key and in Rust I swapped values that were out of place. I expected this to be worse for Rust, but I guess that doing only bad lines and not having any line be too long makes it OK. Still, let's see if we can get the custom sort working.  
 I just made a part2v2 function this time rather than a whole new project and added a bit to main. I already had a hash of hashes to track the order in the Rust version, so I used that inside my sort closure. It worked great and the release runtime for that part is now 1.2 ms and 120x Python. Since Python was a hash of lists, we are back to not exactly comparable. I'm happy with that for now
-* Day 6: ...
+* Day 6: I had two versions of this in Python, I will include both in the comparison.
+```
+        Python v2   Rust(debug) (release)   in milliseconds
+                                v1      v2      v3
+Part1   7.4    5.4  6.0         0.49
+Part2   86109  3861 232000      5600    330     105
+```
+The second version in Python is a parallel one using ProcessPoolExecutor and breaking up the problem in part 2 line-by-line. This is a 23x speed up, Python to Python on a 16 core multi-threaded CPU, so probably in-line with expectations for a good parallel target. I'm unsure where the 2ms came from for part 1, but it could be an artifact of where the first perf_counter() was.  
+The original Rust version was the same approach as Python with speedups of 15x for both parts, but with parallel Python part 2 being faster. So of course we will need to try parallel Rust. However, first I wanted to get rid of the clone and fix some unneeded mutable variables, so that would not bog down the parallel version. This helped 6% on its own.  
+For the parallel version I modified my now cleaner part2 to use Rayon's par_iter() like I tried in day04. This time it worked nicely with a run time of 330 ms such that Rust is now 11x faster comparing both parallel versions. There is an obvious logic improvement that we should make before we say we are done with this day. We only need to test a block that intersects the original path. Let's make a v3 for Rust to see what that does.  
+I needed to adjust part 1 to take a HashMap (it was creating an unused one anyway) so it could be used in v3, but it worked and provided a 3x speedup giving a total 36x speedup vs parallel Python and a final part 2 time of 105 ms
+* Day 7: ...
