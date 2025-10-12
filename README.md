@@ -74,4 +74,13 @@ The second version in Python is a parallel one using ProcessPoolExecutor and bre
 The original Rust version was the same approach as Python with speedups of 15x for both parts, but with parallel Python part 2 being faster. So of course we will need to try parallel Rust. However, first I wanted to get rid of the clone and fix some unneeded mutable variables, so that would not bog down the parallel version. This helped 6% on its own.  
 For the parallel version I modified my now cleaner part2 to use Rayon's par_iter() like I tried in day04. This time it worked nicely with a run time of 330 ms such that Rust is now 11x faster comparing both parallel versions. There is an obvious logic improvement that we should make before we say we are done with this day. We only need to test a block that intersects the original path. Let's make a v3 for Rust to see what that does.  
 I needed to adjust part 1 to take a HashMap (it was creating an unused one anyway) so it could be used in v3, but it worked and provided a 3x speedup giving a total 36x speedup vs parallel Python and a final part 2 time of 105 ms
-* Day 7: ...
+* Day 7: So this was mostly the brute force way.
+```
+        Python  Rust(debug) (release)   in milliseconds
+Part1   367     156         9.6
+Part2   26918   2454        283
+```
+Rust is faster by 38x in part 1 and 95x in part 2. The approaches are similar, but I used nested for loops in Python with the itertools product iterator. In Rust, I used a recursive function. The loops in Python are probably a little cumbersome as the operators are represented with strings and then ifs are used to see what to do. In Python part 2, there is also a string conversion to get length that is probably slower than the computation only method I did in Rust. Since I think a good loop is supposed to be faster than recursion and we should be able to figure out some kind of early exit, let's try another version.  
+A looped version for part 1 with a inner-loop early exit (like the Python part 2 version) ran slightly slower at 13 ms. Doing something in parallel here might not improve things either, but we probably have enough room in part 2 to run in parallel. Let's put part 1 back and try that in part 2.  
+The debug version of part 2 in parallel was slower, but the release version delivered with 23 ms, 15x faster than the Rust P2 and 1,170x faster than the Python P2. To use Rayon on this, I needed a different tool where I broke up the string by lines first and then fed to `s.lines().par_bridge()` to do the parallelization
+* Day 8: ...

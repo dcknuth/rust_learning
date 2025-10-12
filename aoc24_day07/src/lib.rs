@@ -13,6 +13,35 @@ fn try_ops(result: usize, cur_total: usize, mut num_list: Vec<usize>) -> bool {
     }
 }
 
+fn bool_combinations(n: usize) -> impl Iterator<Item = Vec<bool>> {
+    (0..1 << n).map(move |i| {
+        (0..n).map(move |j| (i >> j) & 1 == 1).collect()
+    })
+}
+
+fn try_ops_v2(result: usize, mut num_list: Vec<usize>) -> bool {
+    // assuming all numbers are >0
+    num_list.sort_by(|a, b| b.cmp(a));
+    
+    for combo in bool_combinations(num_list.len() - 1) {
+        let mut total = num_list[0];
+        for i in 1..num_list.len() {
+            if combo[i-1] {
+                total *= num_list[i];
+            } else {
+                total += num_list[i];
+            }
+            if total > result {
+                break;
+            }
+        }
+        if total == result {
+            return true;
+        }
+    }
+    false
+}
+
 pub fn part1(s: &str) -> usize {
     let mut total = 0;
     for line in s.lines() {
@@ -67,6 +96,23 @@ pub fn part2(s: &str) -> usize {
     }
 
     total
+}
+
+use rayon::prelude::*;
+pub fn part2v2(s: &str) -> usize {
+    s.lines().par_bridge().map(|line| {
+        let parts: Vec<&str> = line.split(':').collect();
+        let result: usize = parts[0].parse().unwrap();
+        let mut operands: Vec<usize> = parts[1].trim().split_whitespace()
+            .map(|op| op.parse().unwrap())
+            .rev().collect();
+        let cur_num = operands.pop().unwrap();
+        if try3ops(result, cur_num, operands) {
+            result
+        } else {
+            0
+        }
+    }).sum()
 }
 
 #[cfg(test)]
