@@ -83,4 +83,11 @@ Part2   26918   2454        283
 Rust is faster by 38x in part 1 and 95x in part 2. The approaches are similar, but I used nested for loops in Python with the itertools product iterator. In Rust, I used a recursive function. The loops in Python are probably a little cumbersome as the operators are represented with strings and then ifs are used to see what to do. In Python part 2, there is also a string conversion to get length that is probably slower than the computation only method I did in Rust. Since I think a good loop is supposed to be faster than recursion and we should be able to figure out some kind of early exit, let's try another version.  
 A looped version for part 1 with a inner-loop early exit (like the Python part 2 version) ran slightly slower at 13 ms. Doing something in parallel here might not improve things either, but we probably have enough room in part 2 to run in parallel. Let's put part 1 back and try that in part 2.  
 The debug version of part 2 in parallel was slower, but the release version delivered with 23 ms, 15x faster than the Rust P2 and 1,170x faster than the Python P2. To use Rayon on this, I needed a different tool where I broke up the string by lines first and then fed to `s.lines().par_bridge()` to do the parallelization
-* Day 8: ...
+* Day 8: Seems pretty straight forward to calculate two or all x, y values inside an area. Times were
+```
+        Python  Rust(debug) (release)   in milliseconds
+Part1   1.2     0.68        0.084
+Part2   1.0     1.9         0.12
+```
+Rust is 14x faster for part 1 and 8x faster for part 2. It would probably be a bit better on part 2 if it had reused the string input parsing as the Python version did. Changing the Rust version to do that does not seem interesting enough and there is just not enough time taken to make a parallel version worth it. Although, this may be a case where, say two, threads would run faster, but some automatic attempt to saturate the processor with 32 would backfire. For AOC as a toy, this is plenty fast
+* Day 9: ...
