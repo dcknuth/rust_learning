@@ -90,4 +90,11 @@ Part1   1.2     0.68        0.084
 Part2   1.0     1.9         0.12
 ```
 Rust is 14x faster for part 1 and 8x faster for part 2. It would probably be a bit better on part 2 if it had reused the string input parsing as the Python version did. Changing the Rust version to do that does not seem interesting enough and there is just not enough time taken to make a parallel version worth it. Although, this may be a case where, say two, threads would run faster, but some automatic attempt to saturate the processor with 32 would backfire. For AOC as a toy, this is plenty fast
-* Day 9: ...
+* Day 9: The approaches seem the same between Python and Rust, but even in Debug Rust is a good bit faster.
+```
+        Python  Rust(debug) (release)   in milliseconds
+Part1   3059     6.2        0.52
+Part2   4290     1349       31.8
+```
+Rust is 5882x and 134x faster. Even though the approach was similar, I did some inefficient list removals and inserts in the Python version that I avoided in the Rust version. Just like day 7, we could probably find a number of threads that helps without too much overhead. It seems there is a way to do this with Rayon, so let's give it a quick try. To start, let's try letting par_iter() do its thing calculating the checksum in part 1. This should end up being longer due to the overhead of starting threads. It was, taking 1.8 ms. Then let's try just two threads in the pool. That took 0.64, so better, but not than just sticking to one thread. Let's put it back, it was fun to try out
+* Day 10: ...
