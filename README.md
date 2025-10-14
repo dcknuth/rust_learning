@@ -97,4 +97,13 @@ Part1   3059     6.2        0.52
 Part2   4290     1349       31.8
 ```
 Rust is 5882x and 134x faster. Even though the approach was similar, I did some inefficient list removals and inserts in the Python version that I avoided in the Rust version. Just like day 7, we could probably find a number of threads that helps without too much overhead. It seems there is a way to do this with Rayon, so let's give it a quick try. To start, let's try letting par_iter() do its thing calculating the checksum in part 1. This should end up being longer due to the overhead of starting threads. It was, taking 1.8 ms. Then let's try just two threads in the pool. That took 0.64, so better, but not than just sticking to one thread. Let's put it back, it was fun to try out
-* Day 10: ...
+* Day 10: I used graph libraries in both efforts, but perhaps didn't have to or at least didn't need shortest-path help from them. Here are the times:
+```
+        Python  Rust(debug) (release)   in milliseconds
+Part1   4072    13.6        0.91
+Part2   2232    7.0         0.32
+```
+Rust is 4000+x faster on both since I used semi-expensive nested graph-path calls in Python vs less expensive graph walks in rust. To complete my adventure here, I tried to use samply. After getting it installed, it seemed to say that startup and file read-in were taking most of the time for day10 and there was not an obvious issue in the code that I was timing with time::Instant and elapsed(). Probably would be more help with a larger, more time consuming program
+
+## Final Thoughts
+Rust, as a compiled language, was expected to be faster and it is. It seems that it will get you about 10x on average vs. similar Python code. Rust seems to naturally push you towards faster running code/solutions while Python pushes to minimize the coding time to get something running. Parallelizing in either, yourself or with a library, seems not too difficult. In many of these toy cases, Rust is so fast that parallelizing is not needed. If there is an AOC 2025, I will try to finish fast with Python, but will come back for an optimized version with Rust. I found that Rust's testing framework was very natural to use with the examples in AOC and probably helps a lot in larger projects. I didn't use all the tricks listed [here](https://nindalf.com/posts/optimising-rust/), but it was a nice read and very helpful
